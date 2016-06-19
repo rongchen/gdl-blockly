@@ -25,10 +25,10 @@ Blockly.JavaScript['guide_definition'] = function(block) {
 Blockly.Blocks['rule'] = {
   init: function() {
     this.appendStatementInput("when")
-    .setCheck("expression")
+    .setCheck("binary_expression")
     .appendField("when");
     this.appendStatementInput("then")
-    .setCheck("expression")
+    .setCheck("assignment_expression")
     .appendField("then");
     this.appendDummyInput()
     .appendField("priority")
@@ -64,9 +64,10 @@ function archetype_list() {
 
 function archetype_element_list() {
   var options = [
-      ["weight.value", "/data[at0002]/events[at0003]/data[at0001]/items[at0004]"],
-      ["height.value", "/data[at0001]/events[at0002]/data[at0003]/items[at0004]"],
-      ["bmi.value", "/data[at0001]/events[at0002]/data[at0003]/items[at0005]"]
+    ["weight.value", "/data[at0002]/events[at0003]/data[at0001]/items[at0004]"],
+    ["height.value", "/data[at0001]/events[at0002]/data[at0003]/items[at0004]"],
+    ["bmi.value", "/data[at0001]/events[at0002]/data[at0003]/items[at0005]"],
+    ["event.time", "/data/events/time"]
   ];
   return options
 }
@@ -85,7 +86,7 @@ Blockly.Blocks['archetype_binding'] = {
     .setCheck("element_binding")
     .appendField("elements");
     this.appendStatementInput("predicates")
-    .setCheck("expression")
+    .setCheck(["expression", "unary_expression"])
     .appendField("predicates");
     this.setPreviousStatement(true, 'archetype_binding');
     this.setNextStatement(true, 'archetype_binding');
@@ -113,7 +114,7 @@ Blockly.Blocks['element_binding'] = {
     var element_dropdown = new Blockly.FieldDropdown(archetype_element_list);
     this.appendDummyInput()
     .appendField("element.path")
-    .appendField(element_dropdown, "path");
+    .appendField(element_dropdown, "element_path");
     this.setPreviousStatement(true, 'element_binding');
     this.setNextStatement(true, 'element_binding');
     this.setColour(210);
@@ -122,28 +123,124 @@ Blockly.Blocks['element_binding'] = {
 };
 Blockly.JavaScript['element_binding'] = function(block) {
   var code = nextGTCode(block);
-  var path = block.getFieldValue('path');
+  var path = block.getFieldValue('element_path');
   var generated = '    ["' + code + '"] = (ELEMENT_BINDING) <\n'
   +'        path = <"' + path + '">\n'
   +'    >\n';
   return generated;
 };
-Blockly.Blocks['expression'] = {
+
+Blockly.Blocks['unary_expression'] = {
   init: function() {
     this.appendDummyInput()
-    .appendField("expression")
-    .appendField(new Blockly.FieldTextInput(""), "expression");
-    this.setInputsInline(false);
-    this.setPreviousStatement(true, 'expression');
-    this.setNextStatement(true, 'expression');
+    .appendField(new Blockly.FieldDropdown([["max", "max"], ["min", "min"]]), "unary_operator");
+    var element_dropdown = new Blockly.FieldDropdown(archetype_element_list);
+    this.appendDummyInput()
+    .appendField("(")
+    .appendField(element_dropdown, "unary_operand")
+    .appendField(")");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, ["expression", "unary_expression"]);
+    this.setNextStatement(true, ["expression", "unary_expression"]);
     this.setColour(160);
     this.setTooltip('Define an expression');
   }
 };
-Blockly.JavaScript['expression'] = function(block) {
-  var expression = block.getFieldValue('expression');
-  var generated = '"' + expression + '",';
+Blockly.JavaScript['unary_expression'] = function(block) {
+  var unary_operator = block.getFieldValue('unary_operator');
+  var unary_operand = block.getFieldValue('unary_operand');
+  var generated = '"' + unary_operator + '(' + unary_operand + ')",';
   return generated;
+};
+Blockly.Blocks['binary_expression'] = {
+  init: function() {
+    this.appendValueInput("first_operand")
+    .setCheck(["unary_expression", "binary_expression"]);
+    this.appendDummyInput()
+    .appendField(new Blockly.FieldDropdown([
+      ["==", "=="], ["<", "<"], [">", ">"], ["/", "/"], ["*", "*"], ["^", "^"]
+    ]), "operator");
+    this.appendValueInput("second_operand")
+    .setCheck(["unary_expression", "binary_expression", "numeric_constant"]);
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, "binary_expression");
+    this.setNextStatement(true, "binary_expression");
+    this.setOutput(true, ["binary_expression", "rule"]);
+    this.setColour(140);
+    this.setTooltip('Binary expression');;
+  }
+};
+Blockly.JavaScript['binary_expression'] = function(block) {
+  var first_operand = Blockly.JavaScript.valueToCode(block, 'first_operand', Blockly.JavaScript.ORDER_ATOMIC);
+  var operator = block.getFieldValue('operator');
+  var second_operand = Blockly.JavaScript.valueToCode(block, 'second_operand', Blockly.JavaScript.ORDER_ATOMIC);
+  var code = '"' + first_operand + operator + second_operand;
+  return code;
+};
+
+Blockly.Blocks['assignment_expression'] = {
+  init: function() {
+    this.appendValueInput("variable")
+    .setCheck(null);
+    this.appendDummyInput()
+    .appendField("=");
+    this.appendValueInput("value")
+    .setCheck(["unary_expression", "binary_expression", "numeric_constant", "string_constant"]);
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, "assignment_expression");
+    this.setNextStatement(true, "assignment_expression");
+    this.setOutput(true, "binary_expression");
+    this.setColour(60);
+    this.setTooltip('Assigment expression');;
+  }
+};
+Blockly.JavaScript['assignment_expression'] = function(block) {
+  var variable = Blockly.JavaScript.valueToCode(block, 'variable', Blockly.JavaScript.ORDER_ATOMIC);
+  var value = Blockly.JavaScript.valueToCode(block, 'value', Blockly.JavaScript.ORDER_ATOMIC);
+  var code = '"' + variable + '=' + value;
+  return code;
+};
+
+Blockly.Blocks['numeric_constant'] = {
+  init: function() {
+    this.appendDummyInput()
+    .appendField(new Blockly.FieldTextInput("0"), "constant");
+    this.setInputsInline(true);
+    this.setOutput(true, "binary_expression");
+    this.setColour(120);
+    this.setTooltip('Numeric constant');
+  }
+};
+Blockly.JavaScript['numeric_constant'] = function(block) {
+  return block.getFieldValue('constant');
+};
+Blockly.Blocks['string_constant'] = {
+  init: function() {
+    this.appendDummyInput()
+    .appendField("'")
+    .appendField(new Blockly.FieldTextInput("abc"), "constant")
+    .appendField("'");
+    this.setInputsInline(true);
+    this.setOutput(true, "binary_expression");
+    this.setColour(100);
+    this.setTooltip('String constant');
+  }
+};
+Blockly.JavaScript['string_constant'] = function(block) {
+  return '\'' + block.getFieldValue('constant') + '\'';
+};
+Blockly.Blocks['variable'] = {
+  init: function() {
+    this.appendDummyInput()
+    .appendField(new Blockly.FieldTextInput("gt0001"), "variable");
+    this.setInputsInline(true);
+    this.setOutput(true, ["binary_expression", "assignment_expression"]);
+    this.setColour(80);
+    this.setTooltip('Variable');
+  }
+};
+Blockly.JavaScript['variable'] = function(block) {
+  return block.getFieldValue('variable');
 };
 function nextGTCode(block) {
   if(block.data == null) {

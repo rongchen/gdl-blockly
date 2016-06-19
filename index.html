@@ -41,7 +41,7 @@
     <table>
       <tr>
         <td width="50%" height="100%" style="padding: 2px;">
-          <div id="blocklyDiv"  style="height: 800px; width: 900px;"></div>
+          <div id="blocklyDiv"  style="height: 800px; width: 1000px;"></div>
         </td>
         <td width="50%" height="100%">
           <textarea id="textarea" rows="60" cols="80"></textarea>
@@ -50,11 +50,16 @@
     </table>
 
     <xml id="toolbox" style="display: none">
-      <block type="guide_definition"></block>
+      <!-- block type="guide_definition"></block>
       <block type="archetype_binding"></block>
-      <block type="element_binding"></block>
+      <block type="element_binding"></block -->
       <block type="rule"></block>
-      <block type="expression"></block>
+      <block type="unary_expression"></block>
+      <block type="binary_expression"></block>
+      <block type="assignment_expression"></block>
+      <block type="numeric_constant"></block>
+      <block type="string_constant"></block>
+      <block type="variable"></block>
     </xml>
 
     <script>
