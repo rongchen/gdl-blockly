@@ -24,8 +24,6 @@ Blockly.JavaScript['guide_definition'] = function(block) {
 };
 Blockly.Blocks['rule'] = {
   init: function() {
-    this.appendDummyInput()
-    .appendField("Rule");
     this.appendStatementInput("when")
     .setCheck("expression")
     .appendField("when");
@@ -53,15 +51,36 @@ Blockly.JavaScript['rule'] = function(block) {
   +'>\n';
   return generated;
 };
+
+function archetype_list() {
+  // could be retrieved from a public CKM or a git repo
+  var options = [
+    ["body_weight", "openEHR-EHR-OBSERVATION.body_weight.v1"],
+    ["height", "openEHR-EHR-OBSERVATION.height.v1"],
+    ["body_mass_index", "openEHR-EHR-OBSERVATION.body_mass_index.v1"]
+  ];
+  return options;
+}
+
+function archetype_element_list() {
+  var options = [
+      ["weight.value", "/data[at0002]/events[at0003]/data[at0001]/items[at0004]"],
+      ["height.value", "/data[at0001]/events[at0002]/data[at0003]/items[at0004]"],
+      ["bmi.value", "/data[at0001]/events[at0002]/data[at0003]/items[at0005]"]
+  ];
+  return options
+}
+
 Blockly.Blocks['archetype_binding'] = {
   init: function() {
+    var archetype_dropdown = new Blockly.FieldDropdown(archetype_list);
     this.appendDummyInput()
-    .appendField("Archetype");
+    .appendField("archetype")
+    //.appendField(new Blockly.FieldTextInput(""), "id");
+    .appendField(archetype_dropdown, 'id');
+
     this.appendDummyInput()
     .appendField(new Blockly.FieldDropdown([["EHR", "EHR"], ["CDS", "CDS"]]), "domain");
-    this.appendDummyInput()
-    .appendField("id =")
-    .appendField(new Blockly.FieldTextInput(""), "id");
     this.appendStatementInput("elements")
     .setCheck("element_binding")
     .appendField("elements");
@@ -91,11 +110,10 @@ Blockly.JavaScript['archetype_binding'] = function(block) {
 };
 Blockly.Blocks['element_binding'] = {
   init: function() {
+    var element_dropdown = new Blockly.FieldDropdown(archetype_element_list);
     this.appendDummyInput()
-    .appendField("Element");
-    this.appendDummyInput()
-    .appendField("path =")
-    .appendField(new Blockly.FieldTextInput(""), "path");
+    .appendField("element.path")
+    .appendField(element_dropdown, "path");
     this.setPreviousStatement(true, 'element_binding');
     this.setNextStatement(true, 'element_binding');
     this.setColour(210);
@@ -113,7 +131,7 @@ Blockly.JavaScript['element_binding'] = function(block) {
 Blockly.Blocks['expression'] = {
   init: function() {
     this.appendDummyInput()
-    .appendField("Expression")
+    .appendField("expression")
     .appendField(new Blockly.FieldTextInput(""), "expression");
     this.setInputsInline(false);
     this.setPreviousStatement(true, 'expression');

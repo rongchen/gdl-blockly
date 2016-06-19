@@ -5,8 +5,8 @@
   <title>Blockly GDL Authoring Demo</title>
   <script src="./blockly/blockly_compressed.js"></script>
   <script src="./blockly/javascript_compressed.js"></script>
-  <script src="./gdl_blocks.js"></script>
   <script src="./blockly/en.js"></script>
+  <script src="./gdl_blocks.js"></script>
   <style>
   html, body {
     height: 100%;
@@ -61,7 +61,7 @@
       var workspace = Blockly.inject(
         'blocklyDiv',
         {
-          media: '../../media/',
+          media: './media/',
           toolbox: document.getElementById('toolbox')
         }
       );
