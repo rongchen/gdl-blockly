@@ -9,7 +9,7 @@ Blockly.Blocks['guide'] = {
     .appendField("lang")
     .appendField(new Blockly.FieldTextInput("en"), "language");
     this.appendValueInput("description")
-    .setCheck("resource_description")
+    .setCheck("description_item")
     .appendField("description");
     this.appendValueInput("definition")
     .setCheck("guide_definition")
@@ -25,7 +25,7 @@ Blockly.Blocks['guide'] = {
 Blockly.GDL['guide'] = function(block) {
   var text_id = block.getFieldValue('id');
   var text_language = block.getFieldValue('language');
-  var statements_description = Blockly.GDL.statementToCode(block, 'description');
+  var statements_description = Blockly.GDL.valueToCode(block, 'description', Blockly.GDL.ORDER_NONE);
   var statements_definition = Blockly.GDL.statementToCode(block, 'definition');
   var statements_ontology = Blockly.GDL.statementToCode(block, 'ontology');
   // TODO: Assemble JavaScript into code variable.
@@ -36,7 +36,17 @@ Blockly.GDL['guide'] = function(block) {
   + '    language = (LANGUAGE) <\n'
   + '        original_language = <[ISO_639-1::en]>\n'
   + '    >\n'
-  + '    description = (RESOURCE_DESCRIPTION) <\n' + statements_description
+  + '    description = (RESOURCE_DESCRIPTION) <\n'
+  + '        details = <\n'
+  + '            ' + statements_description
+  + '        >\n'
+  + '        lifecycle_state = <"Author draft">\n'
+  + '        original_author = <\n'
+  + '            ["date"] = <"author.date">\n'
+  + '            ["email"] = <"author.email">\n'
+  + '            ["name"] = <"author.name">\n'
+  + '            ["organisation"] = <"author.organisation">\n'
+  + '        >\n'
   + '    >\n'
   + '    definition = (GUIDE_DEFINITION) <\n' + statements_definition
   + '    >\n'
@@ -44,6 +54,46 @@ Blockly.GDL['guide'] = function(block) {
   + '    >\n'
   + '>\n';
   return code;
+};
+Blockly.Blocks['description_item'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([["en", "en"], ["sv", "sv"], ["da", "da"]]), "lang");
+    this.appendDummyInput()
+        .appendField("copyright")
+        .appendField(new Blockly.FieldTextInput(""), "copyright");
+    this.appendDummyInput()
+        .appendField("keywords")
+        .appendField(new Blockly.FieldTextInput(""), "keywords");
+    this.appendDummyInput()
+        .appendField("misuse")
+        .appendField(new Blockly.FieldTextInput(""), "misuse");
+    this.appendDummyInput()
+        .appendField("purpose")
+        .appendField(new Blockly.FieldTextInput(""), "purpose");
+    this.appendDummyInput()
+        .appendField("use")
+        .appendField(new Blockly.FieldTextInput(""), "use");
+    this.setOutput(true);
+    this.setColour(285);
+    this.setTooltip('Description item');
+  }
+};
+Blockly.GDL['description_item'] = function(block) {
+  var dropdown_lang = block.getFieldValue('lang');
+  var text_copyright = block.getFieldValue('copyright');
+  var text_keywords = block.getFieldValue('keywords');
+  var text_misuse = block.getFieldValue('misuse');
+  var text_purpose = block.getFieldValue('purpose');
+  var text_use = block.getFieldValue('use');
+  var code = '["' + dropdown_lang + '"] = (RESOURCE_DESCRIPTION_ITEM) <\n'
+  + '                copyright = <"' + text_copyright + '">\n'
+  + '                keywords = <"' + text_keywords + '">\n'
+  + '                misuse = <"' + text_misuse + '">\n'
+  + '                purpose = <"' + text_purpose + '">\n'
+  + '                use = <"' + text_use + '">\n'
+  + '            >\n';
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['guide_definition'] = {
   init: function() {
@@ -153,7 +203,8 @@ Blockly.GDL['archetype_binding'] = function(block) {
   var generated = '["' + code + '"] = (ARCHETYPE_BINDING) <\n'
   +'        archetype_id = <"' + id + '">\n'
   +'        domain = <"' + domain + '">\n'
-  +'        elements = <\n' + elements + '    >\n'
+  +'        elements = <\n' + elements
+  +'        >\n'
   +'        predicates = <"' + predicates + '",...>\n'
   +'    >\n';
   return generated;
@@ -173,8 +224,8 @@ Blockly.Blocks['element_binding'] = {
 Blockly.GDL['element_binding'] = function(block) {
   var code = nextGTCode(block);
   var path = block.getFieldValue('element_path');
-  var generated = '    ["' + code + '"] = (ELEMENT_BINDING) <\n'
-  +'        path = <"' + path + '">\n'
-  +'    >\n';
+  var generated = '        ["' + code + '"] = (ELEMENT_BINDING) <\n'
+  +'            path = <"' + path + '">\n'
+  +'        >\n';
   return generated;
 };
