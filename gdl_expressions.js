@@ -76,7 +76,6 @@ Blockly.Blocks['function_expression'] = {
 Blockly.GDL['function_expression'] = function(block) {
   var function_name = block.getFieldValue('function');
   var parameter = Blockly.GDL.valueToCode(block, 'parameter', Blockly.GDL.ORDER_NONE);
-  console.log("parameter: " + parameter.length);
   var code = function_name + '(' + parameter + ')';
   return [code, Blockly.GDL.ORDER_NONE];
 };

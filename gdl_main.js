@@ -1,6 +1,50 @@
 Blockly.GDL.INDENT = '    ';
 var gt_code_count = 1;
-
+Blockly.Blocks['guide'] = {
+  init: function() {
+    this.appendDummyInput()
+    .appendField("id")
+    .appendField(new Blockly.FieldTextInput(""), "id");
+    this.appendDummyInput()
+    .appendField("lang")
+    .appendField(new Blockly.FieldTextInput("en"), "language");
+    this.appendValueInput("description")
+    .setCheck("resource_description")
+    .appendField("description");
+    this.appendValueInput("definition")
+    .setCheck("guide_definition")
+    .appendField("definition");
+    this.appendValueInput("ontology")
+    .setCheck("guide_ontology")
+    .appendField("ontology");
+    this.setColour(330);
+    this.setTooltip('Guide');
+    this.setHelpUrl('http://www.openehr.org/releases/CDS/latest/docs/GDL/GDL.html');
+  }
+};
+Blockly.GDL['guide'] = function(block) {
+  var text_id = block.getFieldValue('id');
+  var text_language = block.getFieldValue('language');
+  var statements_description = Blockly.GDL.statementToCode(block, 'description');
+  var statements_definition = Blockly.GDL.statementToCode(block, 'definition');
+  var statements_ontology = Blockly.GDL.statementToCode(block, 'ontology');
+  // TODO: Assemble JavaScript into code variable.
+  var code = '(GUIDE) <\n'
+  + '    gdl_version = <"0.1">\n'
+  + '    id = <"' + text_id + '">\n'
+  + '    concept = <"gt0000">\n'
+  + '    language = (LANGUAGE) <\n'
+  + '        original_language = <[ISO_639-1::en]>\n'
+  + '    >\n'
+  + '    description = (RESOURCE_DESCRIPTION) <\n' + statements_description
+  + '    >\n'
+  + '    definition = (GUIDE_DEFINITION) <\n' + statements_definition
+  + '    >\n'
+  + '    ontology = (GUIDE_ONTOLOGY) <\n'
+  + '    >\n'
+  + '>\n';
+  return code;
+};
 Blockly.Blocks['guide_definition'] = {
   init: function() {
     this.appendDummyInput()
@@ -13,6 +57,7 @@ Blockly.Blocks['guide_definition'] = {
     .appendField("rules");
     this.setPreviousStatement(false, null);
     this.setNextStatement(false, null);
+    this.setOutput(true);
     this.setColour(90);
     this.setTooltip('Define a guide definition');
   }
@@ -20,8 +65,12 @@ Blockly.Blocks['guide_definition'] = {
 Blockly.GDL['guide_definition'] = function(block) {
   var archetype_bindings = Blockly.GDL.statementToCode(block, 'archetype_bindings');
   var rules = Blockly.GDL.statementToCode(block, 'rules');
-  var generated = 'archetype_bindings = <\n' + archetype_bindings + '>\n'
-  + 'rules = <\n' + rules + '>\n';
+  var generated = '    archetype_bindings = <\n'
+  + '    ' + archetype_bindings
+  + '    >\n'
+  + '    rules = <\n'
+  + '    ' + rules
+  + '    >\n';
   return generated;
 };
 Blockly.Blocks['rule'] = {
@@ -37,20 +86,21 @@ Blockly.Blocks['rule'] = {
     .appendField(new Blockly.FieldTextInput(""), "priority");
     this.setPreviousStatement(true, 'rule');
     this.setNextStatement(true, 'rule');
+    this.setOutput(true, null);
     this.setColour(180);
     this.setTooltip('Define a rule');
   }
 };
 Blockly.GDL['rule'] = function(block) {
-  var when = Blockly.GDL.statementToCode(block, 'when');
-  var then = Blockly.GDL.statementToCode(block, 'then');
+  var when = Blockly.GDL.valueToCode(block, 'when', Blockly.GDL.ORDER_NONE);
+  var then = Blockly.GDL.valueToCode(block, 'then', Blockly.GDL.ORDER_NONE);
   var priority = block.getFieldValue('priority');
   var code = nextGTCode(block);
   var generated = '["' + code + '"] = (RULE) <\n'
-  +'    when = <' + when + '>\n'
-  +'    then = <' + then + '>\n'
-  +'    priority = <' + priority + '>\n'
-  +'>\n';
+  +'        when = <' + when + '>\n'
+  +'        then = <' + then + '>\n'
+  +'        priority = <' + priority + '>\n'
+  +'    >\n';
   return generated;
 };
 
@@ -79,9 +129,7 @@ Blockly.Blocks['archetype_binding'] = {
     var archetype_dropdown = new Blockly.FieldDropdown(archetype_list);
     this.appendDummyInput()
     .appendField("archetype")
-    //.appendField(new Blockly.FieldTextInput(""), "id");
     .appendField(archetype_dropdown, 'id');
-
     this.appendDummyInput()
     .appendField(new Blockly.FieldDropdown([["EHR", "EHR"], ["CDS", "CDS"]]), "domain");
     this.appendStatementInput("elements")
@@ -103,11 +151,11 @@ Blockly.GDL['archetype_binding'] = function(block) {
   var elements = Blockly.GDL.statementToCode(block, 'elements')
   var predicates = Blockly.GDL.valueToCode(block, 'predicates')
   var generated = '["' + code + '"] = (ARCHETYPE_BINDING) <\n'
-  +'    archetype_id = <"' + id + '">\n'
-  +'    domain = <"' + domain + '">\n'
-  +'    elements = <\n' + elements + '    >\n'
-  +'    predicates = <"' + predicates + '",...>\n'
-  +'>\n';
+  +'        archetype_id = <"' + id + '">\n'
+  +'        domain = <"' + domain + '">\n'
+  +'        elements = <\n' + elements + '    >\n'
+  +'        predicates = <"' + predicates + '",...>\n'
+  +'    >\n';
   return generated;
 };
 Blockly.Blocks['element_binding'] = {
