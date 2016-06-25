@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <title>Blockly GDL Authoring Demo</title>
   <script src="./blockly/blockly_compressed.js"></script>
-  <script src="./blockly/javascript_compressed.js"></script>
   <script src="./blockly/en.js"></script>
+  <script src="./gdl.js"></script>
   <script src="./gdl_blocks.js"></script>
+  <script src="./gdl_expressions.js"></script>
   <style>
   html, body {
     height: 100%;
@@ -50,34 +51,38 @@
     </table>
 
     <xml id="toolbox" style="display: none">
-      <!-- block type="guide_definition"></block>
-      <block type="archetype_binding"></block>
-      <block type="element_binding"></block -->
-      <block type="rule"></block>
-      <block type="unary_expression"></block>
-      <block type="binary_expression"></block>
-      <block type="assignment_expression"></block>
-      <block type="function_expression"></block>
-      <block type="numeric_constant"></block>
-      <block type="string_constant"></block>
-      <block type="boolean_constant"></block>
-      <block type="variable"></block>
+      <category name="GDL main model">
+        <block type="guide_definition"></block>
+        <block type="archetype_binding"></block>
+        <block type="element_binding"></block>
+        <block type="rule"></block>
+      </category>
+      <category name="GDL expressions">
+        <block type="binary_expression"></block>
+        <block type="unary_expression"></block>
+        <block type="function_expression"></block>
+        <block type="assignment_expression"></block>
+        <block type="numeric_constant"></block>
+        <block type="string_constant"></block>
+        <block type="boolean_constant"></block>
+        <block type="variable"></block>
+      </category>
     </xml>
 
     <script>
-      var workspace = Blockly.inject(
-        'blocklyDiv',
-        {
-          media: './media/',
-          toolbox: document.getElementById('toolbox')
-        }
-      );
-
-      function myUpdateFunction(event) {
-        var code = Blockly.JavaScript.workspaceToCode(workspace);
-        document.getElementById('textarea').value = code;
+    var workspace = Blockly.inject(
+      'blocklyDiv',
+      {
+        media: './media/',
+        toolbox: document.getElementById('toolbox')
       }
-      workspace.addChangeListener(myUpdateFunction);
+    );
+
+    function myUpdateFunction(event) {
+      var code = Blockly.GDL.workspaceToCode(workspace);
+      document.getElementById('textarea').value = code;
+    }
+    workspace.addChangeListener(myUpdateFunction);
     </script>
 
   </body>
