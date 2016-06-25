@@ -87,8 +87,8 @@ Blockly.Blocks['archetype_binding'] = {
     this.appendStatementInput("elements")
     .setCheck("element_binding")
     .appendField("elements");
-    this.appendStatementInput("predicates")
-    .setCheck(["expression", "unary_expression"])
+    this.appendValueInput("predicates")
+    .setCheck(["unary_expression"])
     .appendField("predicates");
     this.setPreviousStatement(true, 'archetype_binding');
     this.setNextStatement(true, 'archetype_binding');
@@ -101,13 +101,12 @@ Blockly.GDL['archetype_binding'] = function(block) {
   var domain = block.getFieldValue('domain');
   var id = block.getFieldValue('id');
   var elements = Blockly.GDL.statementToCode(block, 'elements')
-  var predicates = Blockly.GDL.statementToCode(block, 'predicates')
-  var generated = 'archetype_binding = <\n'
-  +'    ["' + code + '"] = (ARCHETYPE_BINDING) <\n'
+  var predicates = Blockly.GDL.valueToCode(block, 'predicates')
+  var generated = '["' + code + '"] = (ARCHETYPE_BINDING) <\n'
   +'    archetype_id = <"' + id + '">\n'
   +'    domain = <"' + domain + '">\n'
   +'    elements = <\n' + elements + '    >\n'
-  +'    predicates = <' + predicates + '>\n'
+  +'    predicates = <"' + predicates + '",...>\n'
   +'>\n';
   return generated;
 };

@@ -63,6 +63,7 @@ Blockly.GDL.addReservedWords(
  * Order of operation ENUMs.
  */
 Blockly.GDL.ORDER_ATOMIC = 0;         // 0 "" ...
+Blockly.GDL.ORDER_NONE = 99; 
 
 /**
  * Allow for switching between one and zero based indexing, one based by

@@ -19,8 +19,8 @@ Blockly.Blocks['unary_expression'] = {
 Blockly.GDL['unary_expression'] = function(block) {
   var unary_operator = block.getFieldValue('unary_operator');
   var unary_operand = block.getFieldValue('unary_operand');
-  var generated = '"' + unary_operator + '(' + unary_operand + ')",';
-  return generated;
+  var code = '"' + unary_operator + '(' + unary_operand + ')",';
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['binary_expression'] = {
   init: function() {
@@ -48,11 +48,11 @@ Blockly.Blocks['binary_expression'] = {
   }
 };
 Blockly.GDL['binary_expression'] = function(block) {
-  var first_operand = Blockly.GDL.statementToCode(block, 'first_operand');
+  var first_operand = Blockly.GDL.valueToCode(block, 'first_operand', Blockly.GDL.ORDER_NONE);
   var operator = block.getFieldValue('operator');
-  var second_operand = Blockly.GDL.statementToCode(block, 'second_operand');
+  var second_operand = Blockly.GDL.valueToCode(block, 'second_operand', Blockly.GDL.ORDER_NONE);
   var code = '(' + first_operand + operator + second_operand + ')';
-  return code;
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['function_expression'] = {
   init: function() {
@@ -62,12 +62,12 @@ Blockly.Blocks['function_expression'] = {
     ]), "function")
     .appendField("(");
     this.appendValueInput("parameter")
-    .setCheck(["unary_expression", "binary_expression", "function_expression", "variable"]);
+    .setCheck(["unary_expression", "binary_expression", "function_expression", "variable", "string_constant"]);
     this.appendDummyInput()
     .appendField(")");
     this.setInputsInline(true);
-    this.setPreviousStatement(false);
-    this.setNextStatement(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
     this.setOutput(true, ["binary_expression", "unary_expression"]);
     this.setColour(40);
     this.setTooltip('Function expression');;
@@ -75,9 +75,10 @@ Blockly.Blocks['function_expression'] = {
 };
 Blockly.GDL['function_expression'] = function(block) {
   var function_name = block.getFieldValue('function');
-  var parameter = Blockly.GDL.statementToCode(block, 'parameter');
+  var parameter = Blockly.GDL.valueToCode(block, 'parameter', Blockly.GDL.ORDER_NONE);
+  console.log("parameter: " + parameter.length);
   var code = function_name + '(' + parameter + ')';
-  return code;
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['assignment_expression'] = {
   init: function() {
@@ -96,10 +97,10 @@ Blockly.Blocks['assignment_expression'] = {
   }
 };
 Blockly.GDL['assignment_expression'] = function(block) {
-  var variable = Blockly.GDL.statementToCode(block, 'variable');
-  var value = Blockly.GDL.statementToCode(block, 'value');
+  var variable = Blockly.GDL.valueToCode(block, 'variable', Blockly.GDL.ORDER_NONE);
+  var value = Blockly.GDL.valueToCode(block, 'value', Blockly.GDL.ORDER_NONE);
   var code = '"' + variable + '=' + value + '", ';
-  return code;
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 
 Blockly.Blocks['numeric_constant'] = {
@@ -113,7 +114,8 @@ Blockly.Blocks['numeric_constant'] = {
   }
 };
 Blockly.GDL['numeric_constant'] = function(block) {
-  return block.getFieldValue('constant');
+  var constant = block.getFieldValue('constant');
+  return [constant, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['boolean_constant'] = {
   init: function() {
@@ -127,7 +129,8 @@ Blockly.Blocks['boolean_constant'] = {
   }
 };
 Blockly.GDL['boolean_constant'] = function(block) {
-  return block.getFieldValue('boolean');
+  var boolean = block.getFieldValue('boolean');
+  return [boolean, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['string_constant'] = {
   init: function() {
@@ -143,7 +146,8 @@ Blockly.Blocks['string_constant'] = {
 };
 Blockly.GDL['string_constant'] = function(block) {
   var constant = block.getFieldValue('constant');
-  return "'" + constant + "'" ;
+  var code = "'" + constant + "'"
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['variable'] = {
   init: function() {
@@ -158,7 +162,7 @@ Blockly.Blocks['variable'] = {
 Blockly.GDL['variable'] = function(block) {
   var variable = block.getFieldValue('variable');
   var code = '$' + variable;
-  return code;
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 Blockly.Blocks['variable_exists'] = {
   init: function() {
@@ -186,7 +190,7 @@ Blockly.GDL['variable_exists'] = function(block) {
     code = code + "==null";
   }
   code = code + '"';
-  return code;
+  return [code, Blockly.GDL.ORDER_NONE];
 };
 function nextGTCode(block) {
   if(block.data == null) {
