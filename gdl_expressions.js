@@ -162,8 +162,8 @@ Blockly.GDL['variable'] = function(block) {
 };
 Blockly.Blocks['variable_exists'] = {
   init: function() {
-    this.appendValueInput("variable")
-    .setCheck(null);
+    this.appendValueInput("variable");
+    //.setCheck("variable");
     this.appendDummyInput()
     .appendField(" ")
     .appendField(new Blockly.FieldDropdown([
@@ -172,7 +172,7 @@ Blockly.Blocks['variable_exists'] = {
     this.setPreviousStatement(true, "assignment_expression");
     this.setNextStatement(true, "assignment_expression");
     this.setOutput(true, "binary_expression");
-    this.setColour(60);
+    this.setColour(65);
     this.setTooltip('Variable exists');;
   }
 };
@@ -180,7 +180,6 @@ Blockly.GDL['variable_exists'] = function(block) {
   var variable = Blockly.GDL.statementToCode(block, 'variable');
   var exists = block.getFieldValue('exists');
   var code = '"' + variable;
-  console.log("exists: " + exists);
   if(exists == "EXIST") {
     code = code + "!=null";
   } else {
@@ -189,7 +188,6 @@ Blockly.GDL['variable_exists'] = function(block) {
   code = code + '"';
   return code;
 };
-
 function nextGTCode(block) {
   if(block.data == null) {
     block.data = 'gt000' + gt_code_count;

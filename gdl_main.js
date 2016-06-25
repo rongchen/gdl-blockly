@@ -1,4 +1,4 @@
-Blockly.GDL.INDENT = '';
+Blockly.GDL.INDENT = '    ';
 var gt_code_count = 1;
 
 Blockly.Blocks['guide_definition'] = {
