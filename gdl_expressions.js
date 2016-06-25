@@ -160,6 +160,36 @@ Blockly.GDL['variable'] = function(block) {
   var code = '$' + variable;
   return code;
 };
+Blockly.Blocks['variable_exists'] = {
+  init: function() {
+    this.appendValueInput("variable")
+    .setCheck(null);
+    this.appendDummyInput()
+    .appendField(" ")
+    .appendField(new Blockly.FieldDropdown([
+      ["exists", "EXIST"], ["doesn't exist", "NOT_EXIST"]]), "exists");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, "assignment_expression");
+    this.setNextStatement(true, "assignment_expression");
+    this.setOutput(true, "binary_expression");
+    this.setColour(60);
+    this.setTooltip('Variable exists');;
+  }
+};
+Blockly.GDL['variable_exists'] = function(block) {
+  var variable = Blockly.GDL.statementToCode(block, 'variable');
+  var exists = block.getFieldValue('exists');
+  var code = '"' + variable;
+  console.log("exists: " + exists);
+  if(exists == "EXIST") {
+    code = code + "!=null";
+  } else {
+    code = code + "==null";
+  }
+  code = code + '"';
+  return code;
+};
+
 function nextGTCode(block) {
   if(block.data == null) {
     block.data = 'gt000' + gt_code_count;
