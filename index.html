@@ -1,55 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Blockly GDL Authoring Demo</title>
-  <script src="./blockly/blockly_compressed.js"></script>
-  <script src="./blockly/en.js"></script>
-  <script src="./gdl.js"></script>
-  <script src="./gdl_main.js"></script>
-  <script src="./gdl_expressions.js"></script>
-  <style>
-  html, body {
-    height: 100%;
-  }
-  body {
-    background-color: #fff;
-    font-family: sans-serif;
-    margin: 0 5px;
-    overflow: hidden
-  }
-  h1 {
-    font-weight: normal;
-    font-size: 140%;
-  }
-  h3 {
-    margin-top: 5px;
-    margin-bottom: 0;
-  }
-  table {
-    height: 100%;
-    width: 100%;
-  }
-  td {
-    vertical-align: top;
-    padding: 0;
-  }
-  </style>
-</head>
-<body>
-  <h1>
-    <p>Simple demo of GDL authoring using Blockly.</p>
-    <table>
-      <tr>
-        <td width="50%" height="100%" style="padding: 2px;">
-          <div id="blocklyDiv" style="height: 800px; width: 700px;" ></div>
-        </td>
-        <td width="50%" height="100%">
-          <textarea id="textarea" rows="60" cols="86"></textarea>
-        </td>
-      </tr>
-    </table>
-
+  <head>
+    <meta charset="utf-8">
+    <title>Blockly GDL Authoring Demo</title>
+    <script src="./jquery/external/jquery/jquery.js"></script>
+    <script src="./jquery/jquery-ui.js"></script>
+    <script src="./blockly/blockly_compressed.js"></script>
+    <script src="./blockly/en.js"></script>
+    <script src="./gdl.js"></script>
+    <script src="./gdl_main.js"></script>
+    <script src="./gdl_expressions.js"></script>
+    <script src="./app.js"></script>
+    <link href="./jquery/jquery-ui.css" rel="stylesheet">
+    <link href="./style.css" rel="stylesheet">
+  </head>
+  <body>
     <xml id="toolbox" style="display: none">
       <category name="Main model">
         <block type="guide"></block>
@@ -72,21 +37,62 @@
       </category>
     </xml>
 
-    <script>
-    var workspace = Blockly.inject(
-      'blocklyDiv',
-      {
-        media: './media/',
-        toolbox: document.getElementById('toolbox')
-      }
-    );
-
-    function myUpdateFunction(event) {
-      var code = Blockly.GDL.workspaceToCode(workspace);
-      document.getElementById('textarea').value = code;
-    }
-    workspace.addChangeListener(myUpdateFunction);
-    </script>
-
+    <p>Simple demo of GDL authoring using Blockly.</p>
+    <div id="tabs">
+      <ul>
+        <li><a href="#blockly-editor">Blockly GDL editor</a></li>
+        <li><a href="#metadata-editor">Metadata</a></li>
+      </ul>
+      <div id="blockly-editor">
+        <div>
+          <div id="blocklyDiv"></div>
+          <textarea autocomplete="off" id="textarea" rows="60" cols="86"></textarea>
+        </div>
+      </div>
+      <div id="metadata-editor">
+        <h1>Document metadata</h1>
+        <div>
+          <form>
+            <div>
+              <label for="modelname">Name</label>
+              <input autocomplete="off" type="text" name="modelname"/>
+            </div>
+            <fieldset name="authorDetails">
+              <legend>Author details</legend>
+                <label for="authorname">Name</label>
+                <input autocomplete="off" type="text" name="authorname"/>
+                <label for="email">Email</label>
+                <input autocomplete="off" type="text" name="email"/>
+                <label for="organisation">Organisation</label>
+                <input autocomplete="off" type="text" name="organisation"/>
+                <label for="date">Date</label>
+                <input autocomplete="off" type="text" name="date"/>
+            </fieldset>
+          </form>
+          <form class="textarea">
+            <fieldset>
+              <legend>Description</legend>
+              <textarea autocomplete="off" rows="5"></textarea>
+            </fieldset>
+            <fieldset>
+              <legend>Purpose</legend>
+              <textarea autocomplete="off" rows="5"></textarea>
+            </fieldset>
+            <fieldset>
+              <legend>Use</legend>
+              <textarea autocomplete="off" rows="5"></textarea>
+            </fieldset>
+            <fieldset>
+              <legend>Misuse</legend>
+              <textarea autocomplete="off" rows="5"></textarea>
+            </fieldset>
+            <fieldset>
+              <legend>References</legend>
+              <textarea autocomplete="off" rows="5"></textarea>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
   </body>
-  </html>
+</html>
